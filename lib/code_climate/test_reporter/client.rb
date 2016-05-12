@@ -83,14 +83,7 @@ module CodeClimate
         request = Net::HTTP::Post.new(uri.path)
         request["User-Agent"] = USER_AGENT
         request["Content-Type"] = "application/json"
-
-        if CodeClimate::TestReporter.configuration.gzip_request
-          request["Content-Encoding"] = "gzip"
-          request.body = compress(result.to_json)
-        else
-          request.body = result.to_json
-        end
-
+        request.body = result.to_json
         response = http.request(request)
 
         if response.code.to_i >= 200 && response.code.to_i < 300
