@@ -52,7 +52,7 @@ module CodeClimate
         end
       end
 
-      def post_results_to_metrics(result)
+      def post_results(result)
         uri = URI.parse("#{spmetrics_host}/api/cc_hooks")
         http = http_client(uri)
 
@@ -76,7 +76,7 @@ module CodeClimate
         end
       end
 
-      def spmetrics_hook result
+      def spmetrics_hook(result)
         uri = URI.parse("#{host}/test_reports")
         http = http_client(uri)
 
