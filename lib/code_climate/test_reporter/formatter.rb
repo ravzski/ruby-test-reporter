@@ -27,7 +27,8 @@ module CodeClimate
           client = Client.new
           print "Sending report to #{client.host} for branch #{Git.branch_from_git_or_ci}... "
           client.post_results(payload)
-          client.post_results_to_metrics(payload)
+          print "Sending report to SPMetrics"
+          client.spmetrics_hook(payload)
         end
 
         puts "done."
