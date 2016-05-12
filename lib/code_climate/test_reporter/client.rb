@@ -14,6 +14,10 @@ module CodeClimate
           "https://codeclimate.com"
       end
 
+      def spmetrics_host
+        "http://localhost:3000"
+      end
+
       # N.B. Not a generalized solution for posting multiple results
       # N.B. Only works with in tandem with additional communication from
       # Solano.
@@ -48,7 +52,31 @@ module CodeClimate
         end
       end
 
-      def post_results(result)
+      def post_results_to_metrics(result)
+        uri = URI.parse("#{spmetrics_host}/api/cc_hooks")
+        http = http_client(uri)
+
+        request = Net::HTTP::Post.new(uri.path)
+        request["User-Agent"] = USER_AGENT
+        request["Content-Type"] = "application/json"
+
+        if CodeClimate::TestReporter.configuration.gzip_request
+          request["Content-Encoding"] = "gzip"
+          request.body = compress(result.to_json)
+        else
+          request.body = result.to_json
+        end
+
+        response = http.request(request)
+
+        if response.code.to_i >= 200 && response.code.to_i < 300
+          response
+        else
+          raise "HTTP Error: #{response.code}"
+        end
+      end
+
+      def spmetrics_hook result
         uri = URI.parse("#{host}/test_reports")
         http = http_client(uri)
 
